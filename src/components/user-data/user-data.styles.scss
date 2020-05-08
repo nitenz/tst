@@ -1,0 +1,12 @@
+.user-data{
+    border: 1px solid white;
+    position: relative;
+    top: -310px;
+    width: 740px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &.hide{
+        display: none;
+    }
+}
