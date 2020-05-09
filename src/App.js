@@ -1,18 +1,17 @@
 import React from 'react';
 import './App.css';
-import SelectComponent from './components/search-content/search-content.component';
-import UserInfo from './components/user-data/user-data.component';
+
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+
+import HomePage from './pages/home/home.component';
+import VideoPage from './pages/video/video.component';
+import LoginPage from './pages/login/login.component';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      videos :[
-                {id:'vidType1',type:'Drama',videoList:[{id:'11',name:'Black Panther (2018)'},{id:'12',name:'Avengers: Endgame (2019)'},{id:'13',name:'Lady Bird (2017)'},{id:'14',name:'Mission: Impossible - Fallout (2018)'},{id:'15',name:'The Irishman (2019)'}]},
-                {id:'vidType2',type:'Comedy',videoList:[{id:'21',name:'Good Boys'},{id:'22',name:'Stuber'},{id:'23',name:'Shazam!'},{id:'24',name:'When We First Met'},{id:'25',name:'Blockers'}]},
-                {id:'vidType3',type:'Action',videoList:[{id:'31',name:'Ip man'},{id:'32',name:'Ip man 2'},{id:'33',name:'Ip man 3'},{id:'34',name:'Ip man 4'},{id:'35',name:'Rambo'}]}
-              ],
       login:{
         username:'Nitenz',
         movie: {
@@ -25,86 +24,22 @@ class App extends React.Component {
     };
   }
  
-  handleClick( event ){
-    var movieName = event.currentTarget.options[event.currentTarget.options.selectedIndex].text.trim();
-    var movieData = {};
-    var waitTime = 30 * 60 * 1000; // = 30min.
-    var waitTimeText= 15000; // = 30min.
-    var tst = '';
-    var that = this;
-
-    setMovieCounter();
-    
-    getMovieData( this.state.videos, movieName, this.state.login.username,tst );
-   
-    this.setState( {login: movieData} );
-    
-
-    function setMovieCounter(){
-      var sec         = 15,
-      countDiv    = document.getElementById("timer"),
-      countDown   = setInterval(function () {
-          secpass();
-      }, 1000);
-
-      function secpass() {
-          var min     = Math.floor(sec / 60),
-              remSec  = sec % 60;
-          
-          if (remSec < 10) {
-              remSec = '0' + remSec;
-          }
-          if (min < 10) {
-              min = '0' + min;
-          }
-          countDiv.innerHTML = min + ":" + remSec;
-          
-          if (sec > 0) {
-              sec = sec - 1;
-          } else {
-              clearInterval(countDown);
-
-              movieData.name = '';
-              movieData.type = '';
-              movieData.id   = '';
-              movieData.isWatching = false;
-              movieData.username = '';
-              movieData.timeWatched = '00:00:00';
-              document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
-        
-              that.setState( {login: movieData} );
-              
-              alert('The End!')
-          }
-      }
-    }
-
-    function getMovieData( movieList,movieName, userName,timeWatched ){
-      
-      movieList.map(function(movieCategory){
-          movieCategory.videoList.map(function( movie ){
-            if( movie.name === movieName ){
-              movieData.name = movie.name;
-              movieData.type = movieCategory.type;
-              movieData.id   = movie.id;
-              movieData.isWatching = true;
-              movieData.username = userName;
-              movieData.timeWatched = timeWatched;
-              return true;
-            }
-          });
-          if( movieData && movieData.isWatching)
-            return true;
-        });
-    }
-  }
-
   render(){
     return (
       <div className="App">
         <header className="App-header">
-          <UserInfo userData={this.state.login} />
-          <SelectComponent optionsList={this.state.videos} handleClick={this.handleClick.bind(this)}/>
+          <div>
+            <BrowserRouter>
+              <Switch>
+                <Route exact path='/' component={HomePage} />
+                <Route path='/videos' component={VideoPage} />
+                <Route exact path='/login' render={() => this.props.currentUser ?
+                    (<Redirect to='/'/>) :
+                    (<LoginPage/> )} 
+                />
+              </Switch>
+            </BrowserRouter>
+          </div>
         </header>
       </div>
     );
