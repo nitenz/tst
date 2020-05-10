@@ -32,7 +32,7 @@ class Video extends React.Component {
     
     getMovieData( this.state.videos, movieName );
    
-    this.setState( {login: movieData} );
+    this.setState( {movie: movieData} );
     
 
     function setMovieCounter(){

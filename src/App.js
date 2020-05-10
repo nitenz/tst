@@ -1,29 +1,31 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import './App.css';
-
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import HomePage from './pages/home/home.component';
 import VideoPage from './pages/video/video.component';
 import LoginPage from './pages/login/login.component';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
-    this.state = {
-      login:{
-        username:'Nitenz',
-        movie: {
-          timeWatched:'',
-          isWatching: false,
-          name:'',
-          type:''
-        }
-      }
-    };
+import { setCurrentUser } from './redux/user/user.actions';
+
+
+class App extends React.Component {
+
+  handleSubmitp = data =>{
+    setCurrentUser( {username: data.username,sessionId:data.sessionId} );
   }
- 
+
+  componentDidMount(){
+    const { setCurrentUser } = this.props;
+    setCurrentUser( {username:'',sessionId:''} );
+  }
+
+  componentWillUnmount(){
+   
+  }
+
   render(){
     return (
       <div className="App">
@@ -31,10 +33,10 @@ class App extends React.Component {
           <div>
             <BrowserRouter>
               <Switch>
-                <Route exact path='/' component={HomePage} />
+                <Route exact path='/home' component={HomePage} />
                 <Route path='/videos' component={VideoPage} />
-                <Route exact path='/login' render={() => this.props.currentUser ?
-                    (<Redirect to='/'/>) :
+                <Route exact path='/' render={() => this.props.currentUser.sessionId !== '' ?
+                    (<Redirect to='/videos'/>) :
                     (<LoginPage/> )} 
                 />
               </Switch>
@@ -46,4 +48,15 @@ class App extends React.Component {
   }
 } 
 
-export default App;
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser
+});
+
+const mapDispatchToProps = dispatch => ({
+  setCurrentUser: user => dispatch( setCurrentUser(user) )
+});
+
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+)(App);

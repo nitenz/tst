@@ -1,7 +1,9 @@
 import React from 'react';
 import FormInput from '../form-input/form-input.component';
-import CustomButton from '../custom-button/custom-button.component';
 import './login.styles.scss';
+
+import { setCurrentUser } from '../../redux/user/user.actions';
+import { connect } from 'react-redux';
 
 class Login extends React.Component{
     constructor(props){
@@ -9,8 +11,18 @@ class Login extends React.Component{
         
         this.state={
             email:'',
-            password:''    
+            password:''
         }
+    }
+
+    componentDidMount(){
+        this.setState({sessionId:'' });
+    }
+
+    loggedIn = data => {
+        const username = this.state.email;
+        this.setState({ email: '', password: ''});
+        this.props.setCurrentUser( {username:username,sessionId:data.token} );
     }
 
     handleSubmit = async event => {
@@ -19,9 +31,19 @@ class Login extends React.Component{
         const { email, password } = this.state;
 
         try{
-            if( email === 'nitenz@gmail.com' && password === 'teste') {
-                alert( 'Logged in' );
-                this.setState({ email: '', password: '' });
+            if( email && password ) {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        "email": email,
+                        "password": password
+                     })
+                };
+               
+                fetch('https://reqres.in/api/login', requestOptions)
+                    .then(response => response.json())
+                    .then(data => this.loggedIn(data) );
             }
             
         }
@@ -57,7 +79,7 @@ class Login extends React.Component{
                         required 
                     />
                      <div className="buttons">
-                        <CustomButton  type="submit" value="Submit Form"> Login </CustomButton>
+                        <button className="custom-button" type="submit" value="Submit Form" > Login </button>
                     </div>
                 </form> 
             </div>
@@ -65,4 +87,15 @@ class Login extends React.Component{
     }
 }
 
-export default Login;
+const mapStateToProps = ({ user }) => ({
+    currentUser: user.currentUser
+  });
+  
+  const mapDispatchToProps = dispatch => ({
+    setCurrentUser: user => dispatch( setCurrentUser(user) )
+  });
+  
+  export default connect(
+    mapStateToProps, 
+    mapDispatchToProps
+  )(Login);
