@@ -1,0 +1,12 @@
+.movie-queue{
+    .hide{
+        display: none;
+    }
+    .show{
+        display: block;
+    }
+}
+
+.movie-to-play:hover{
+    color: red;
+}

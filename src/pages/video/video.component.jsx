@@ -1,6 +1,7 @@
 import React from 'react';
 import './video.styles.scss';
 
+import MovieQueue from '../../components/movie-queue/movie-queue.component';
 import UserInfo from '../../components/user-data/user-data.component';
 import SelectComponent from '../../components/search-content/search-content.component';
 
@@ -16,77 +17,107 @@ class Video extends React.Component {
       ],
       movie: {
         timeWatched:'',
-        isWatching: false,
+        isPlaying: false,
         name:'',
         type:''
-      }
+      },
+      movieQueue: []
     };
   }
+  
+  playMovie( ){
+    this.setMovieCounter();
+    this.setState( {movie: this.movieData} );
+  }
+
+  movieData = {
+    name : '',
+    type : '',
+    id   : '',
+    isPlaying : false
+  };
  
+  setMovieCounter(){
+    var sec     = 15,
+    that        = this,
+    countDiv    = document.getElementById("timer"),
+    countDown   = setInterval(function () {
+        secpass();
+    }, 1000);
+
+    function secpass() {
+        var min     = Math.floor(sec / 60),
+            remSec  = sec % 60;
+        
+        if (remSec < 10) {
+            remSec = '0' + remSec;
+        }
+        if (min < 10) {
+            min = '0' + min;
+        }
+        countDiv.innerHTML = min + ":" + remSec;
+        
+        if (sec > 0) {
+            sec = sec - 1;
+        } else {
+            clearInterval(countDown);
+
+            that.movieData.name = '';
+            that.movieData.type = '';
+            that.movieData.id   = '';
+            that.movieData.isPlaying = false;
+            document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
+      
+            that.setState( {movie: that.movieData} );
+            
+            alert('The End!')
+        }
+    }
+  }
+
+  getMovieData( movieList, movieName ){
+    var that = this;
+    movieList.map(function(movieCategory){
+        movieCategory.videoList.map(function( movie ){
+          if( movie.name === movieName ){
+            that.movieData.name = movie.name;
+            that.movieData.type = movieCategory.type;
+            that.movieData.id   = movie.id;
+            that.movieData.isPlaying = true;
+            return true;
+          }
+        });
+        if( that.movieData && that.movieData.isPlaying)
+          return true;
+      });
+  }
+
+  handleClickMovieQueue( event ){
+    var auxMovieQueue =  this.state.movieQueue;
+
+    this.movieData = auxMovieQueue.splice(0, 1)[0];
+   
+    if( !this.state.movie.isPlaying ){
+      this.playMovie( this.movieData );
+      this.setState({movieQueue:auxMovieQueue});
+    }
+  }
+
   handleClick( event ){
     var movieName = event.currentTarget.options[event.currentTarget.options.selectedIndex].text.trim();
-    var movieData = {};
-    var that = this;
+    this.movieData = {};
+    this.getMovieData( this.state.videos, movieName );
 
-    setMovieCounter();
-    
-    getMovieData( this.state.videos, movieName );
-   
-    this.setState( {movie: movieData} );
-    
+    if( this.state.movie.isPlaying === false && this.state.movieQueue.length < 1 ){
+      this.playMovie(this.movieData);
+    }else{
+      if( !this.state.movieQueue.find(element => element.name === this.movieData.name ) ){
+        var auxMovieQueue =  this.state.movieQueue;
+        auxMovieQueue.push( this.movieData );
+        document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
+        this.setState( {movieQueue: auxMovieQueue} );
 
-    function setMovieCounter(){
-      var sec         = 15,
-      countDiv    = document.getElementById("timer"),
-      countDown   = setInterval(function () {
-          secpass();
-      }, 1000);
-
-      function secpass() {
-          var min     = Math.floor(sec / 60),
-              remSec  = sec % 60;
-          
-          if (remSec < 10) {
-              remSec = '0' + remSec;
-          }
-          if (min < 10) {
-              min = '0' + min;
-          }
-          countDiv.innerHTML = min + ":" + remSec;
-          
-          if (sec > 0) {
-              sec = sec - 1;
-          } else {
-              clearInterval(countDown);
-
-              movieData.name = '';
-              movieData.type = '';
-              movieData.id   = '';
-              movieData.isWatching = false;
-              document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
-        
-              that.setState( {movie: movieData} );
-              
-              alert('The End!')
-          }
       }
-    }
-
-    function getMovieData( movieList, movieName ){
-      
-      movieList.map(function(movieCategory){
-          movieCategory.videoList.map(function( movie ){
-            if( movie.name === movieName ){
-              movieData.name = movie.name;
-              movieData.type = movieCategory.type;
-              movieData.id   = movie.id;
-              movieData.isWatching = true;
-              return true;
-            }
-          });
-          if( movieData && movieData.isWatching)
-            return true;
-        });
     }
   }
 
@@ -95,6 +126,7 @@ class Video extends React.Component {
       <div className="video-content">
             <SelectComponent optionsList={this.state.videos} handleClick={this.handleClick.bind(this)}/>
             <UserInfo userData={this.state.movie} />
+            <MovieQueue movieQueue={this.state.movieQueue} handleClickMovieQueue={this.handleClickMovieQueue.bind(this)}/>
       </div>
     );
   }
