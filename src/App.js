@@ -5,6 +5,7 @@ import './App.css';
 import HomePage from './pages/home/home.component';
 import VideoPage from './pages/video/video.component';
 import LoginPage from './pages/login/login.component';
+import Logout from './components/logout/logout.component';
 
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
@@ -20,6 +21,7 @@ class App extends React.Component {
   componentDidMount(){
     const { setCurrentUser } = this.props;
     setCurrentUser( {username:'',sessionId:''} );
+    console.log( this.props );
   }
 
   componentWillUnmount(){
@@ -30,7 +32,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <div>
+          <div className="page-container">
             <BrowserRouter>
               <Switch>
                 <Route exact path='/home' component={HomePage} />
@@ -41,6 +43,7 @@ class App extends React.Component {
                 />
               </Switch>
             </BrowserRouter>
+            <Logout />
           </div>
         </header>
       </div>

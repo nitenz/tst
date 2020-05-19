@@ -61,7 +61,7 @@ class Video extends React.Component {
             sec = sec - 1;
         } else {
             clearInterval(countDown);
-            var clearData = {
+            let clearData = {
               name: '',
               type: '',
               id: '',
@@ -103,7 +103,6 @@ class Video extends React.Component {
 
   handleClick( event ){
     var movieName = event.currentTarget.options[event.currentTarget.options.selectedIndex].text.trim(),
-    movieDataToPlay = {},
     auxMovieQueue =  this.state.movieQueue,
     movieDataToPlay = this.getMovieData( this.state.videos, movieName );
 
