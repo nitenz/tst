@@ -17,7 +17,7 @@ class Logout extends React.Component{
     handleClick = async event => {
         try{
             this.props.setCurrentUser( {username:'',sessionId:''} );
-            this.setState({navigate:true});
+            this.setState({navigate:true},() =>  window.location.reload(false) );
         }
         catch( error ){
             console.error(error);
