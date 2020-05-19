@@ -4,6 +4,7 @@ import './movie-queue.styles.scss';
 const MovieQueue = ({ movieQueue,handleClickMovieQueue }) => (
   <div className="movie-queue">
         <label className={ movieQueue.length > 0 ? 'show' : 'hide' }> Movie List Queue:</label>
+        <div className="movie-queue-list">
             {
                 movieQueue.map((movie, idx) => (
                     <div key={idx}>
@@ -12,7 +13,7 @@ const MovieQueue = ({ movieQueue,handleClickMovieQueue }) => (
                     </div>
                 ))
             }
-       
+        </div>
   </div>
 )
 

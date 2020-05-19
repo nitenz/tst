@@ -3,7 +3,7 @@ import './search-content.styles.scss';
 import Form from 'react-bootstrap/Form';
 
 const SelectComponent = ({ optionsList, handleClick}) => (
-  <div>
+  <div className="select-component">
     <Form >
         <Form.Group controlId="exampleForm.SelectCustom">
           <Form.Label>Movie List</Form.Label>

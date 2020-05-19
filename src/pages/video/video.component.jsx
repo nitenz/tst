@@ -25,9 +25,9 @@ class Video extends React.Component {
     };
   }
   
-  playMovie( ){
+  playMovie(movieData){
     this.setMovieCounter();
-    this.setState( {movie: this.movieData} );
+    this.setState( {movie: movieData} );
   }
 
   movieData = {
@@ -61,71 +61,78 @@ class Video extends React.Component {
             sec = sec - 1;
         } else {
             clearInterval(countDown);
-
-            that.movieData.name = '';
-            that.movieData.type = '';
-            that.movieData.id   = '';
-            that.movieData.isPlaying = false;
-            document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
-      
-            that.setState( {movie: that.movieData} );
-            
+            var clearData = {
+              name: '',
+              type: '',
+              id: '',
+              isPlaying: false
+            }
+          
+            that.setState( {movie: clearData} );
             alert('The End!')
         }
     }
   }
 
   getMovieData( movieList, movieName ){
-    var that = this;
+    var movieData = {};
     movieList.map(function(movieCategory){
         movieCategory.videoList.map(function( movie ){
           if( movie.name === movieName ){
-            that.movieData.name = movie.name;
-            that.movieData.type = movieCategory.type;
-            that.movieData.id   = movie.id;
-            that.movieData.isPlaying = true;
-            return true;
+            movieData.name = movie.name;
+            movieData.type = movieCategory.type;
+            movieData.id   = movie.id;
+            movieData.isPlaying = true;
           }
         });
-        if( that.movieData && that.movieData.isPlaying)
-          return true;
       });
+      return movieData;
   }
 
   handleClickMovieQueue( event ){
-    var auxMovieQueue =  this.state.movieQueue;
+    var auxMovieQueue =  this.state.movieQueue,
+    movieData = {};
 
-    this.movieData = auxMovieQueue.splice(0, 1)[0];
-   
-    if( !this.state.movie.isPlaying ){
-      this.playMovie( this.movieData );
+    if(!this.state.movie.isPlaying ){
+      let movieIndex = auxMovieQueue.findIndex(movie => movie.name === event.target.innerText );
+      movieData = auxMovieQueue.splice(movieIndex, 1)[0];
+      this.playMovie( movieData );
       this.setState({movieQueue:auxMovieQueue});
     }
   }
 
   handleClick( event ){
-    var movieName = event.currentTarget.options[event.currentTarget.options.selectedIndex].text.trim();
-    this.movieData = {};
-    this.getMovieData( this.state.videos, movieName );
+    var movieName = event.currentTarget.options[event.currentTarget.options.selectedIndex].text.trim(),
+    movieDataToPlay = {},
+    auxMovieQueue =  this.state.movieQueue,
+    movieDataToPlay = this.getMovieData( this.state.videos, movieName );
 
-    if( this.state.movie.isPlaying === false && this.state.movieQueue.length < 1 ){
-      this.playMovie(this.movieData);
+    if( this.state.movie.isPlaying === false ){
+      //if theres is a movie queue and we select a movie that exists in the queue, remove movie from queuue
+      if(this.state.movieQueue.length > 0 ){
+        let indexOfMovieInQueue = this.state.movieQueue.findIndex(movie => movie.name === movieDataToPlay.name );
+        if( indexOfMovieInQueue >= 0){
+          auxMovieQueue.splice(indexOfMovieInQueue, 1);
+          this.setState( {movieQueue: auxMovieQueue} );
+        }
+      }
+      this.playMovie(movieDataToPlay);
     }else{
-      if( !this.state.movieQueue.find(element => element.name === this.movieData.name ) ){
-        var auxMovieQueue =  this.state.movieQueue;
-        auxMovieQueue.push( this.movieData );
-        document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
+      if( !this.state.movieQueue.find(element => element.name === movieDataToPlay.name ) ){
+        auxMovieQueue.push( movieDataToPlay );
         this.setState( {movieQueue: auxMovieQueue} );
-
+      }else{
+        alert('Movie already in queue!');
       }
     }
+    document.getElementsByClassName('custom-select')[0].selectedIndex = 0;
   }
 
   render(){
     return (
       <div className="video-content">
-            <SelectComponent optionsList={this.state.videos} handleClick={this.handleClick.bind(this)}/>
             <UserInfo userData={this.state.movie} />
+            <SelectComponent optionsList={this.state.videos} handleClick={this.handleClick.bind(this)}/>
             <MovieQueue movieQueue={this.state.movieQueue} handleClickMovieQueue={this.handleClickMovieQueue.bind(this)}/>
       </div>
     );

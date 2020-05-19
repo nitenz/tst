@@ -1,9 +1,16 @@
 .movie-queue{
+    position: relative;
+    top: 300px;
+    height: 300px;
     .hide{
         display: none;
     }
     .show{
         display: block;
+    }
+    .movie-queue-list{
+        height: 250px;
+        overflow-y: auto;
     }
 }
 
