@@ -76,8 +76,8 @@ class Video extends React.Component {
 
   getMovieData( movieList, movieName ){
     var movieData = {};
-    movieList.map(function(movieCategory){
-        movieCategory.videoList.map(function( movie ){
+    movieList.forEach(function(movieCategory){
+        movieCategory.videoList.forEach(function( movie ){
           if( movie.name === movieName ){
             movieData.name = movie.name;
             movieData.type = movieCategory.type;

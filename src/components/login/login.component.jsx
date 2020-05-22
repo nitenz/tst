@@ -20,9 +20,13 @@ class Login extends React.Component{
     }
 
     loggedIn = data => {
-        const username = this.state.email;
-        this.setState({ email: '', password: ''});
-        this.props.setCurrentUser( {username:username,sessionId:data.token} );
+        if( !data.error){
+            const username = this.state.email;
+            this.setState({ email: '', password: ''});
+            this.props.setCurrentUser( {username:username,sessionId:data.token} );
+        }else{
+            alert( data.error );
+        }
     }
 
     handleSubmit = async event => {

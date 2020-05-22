@@ -4,6 +4,7 @@ import './register.styles.scss';
 
 import { setCurrentUser } from '../../redux/user/user.actions';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 class Register extends React.Component{
     constructor(props){
@@ -11,7 +12,8 @@ class Register extends React.Component{
         
         this.state={
             email:'',
-            password:''
+            password:'',
+            navigate:false
         }
     }
 
@@ -21,9 +23,9 @@ class Register extends React.Component{
 
     registered = data => {
         if( !data.error ){
-            const username = this.state.email;
             this.setState({ email: '', password: ''});
-            this.props.setCurrentUser( {username:username,sessionId:data.token} );
+            alert('User created');
+            this.setState({navigate:true},() =>  window.location.reload(false) );
         }else{
             alert( data.error );
         }
@@ -63,6 +65,11 @@ class Register extends React.Component{
     }
 
     render(){
+        const {navigate} = this.state;
+
+        if(navigate){
+            return <Redirect to="/" push={true}/>;
+        }
         return(
             <div className="register">
                 <form onSubmit={this.handleSubmit}>

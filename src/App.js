@@ -2,13 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import './App.css';
 
-import HomePage from './pages/home/home.component';
 import VideoPage from './pages/video/video.component';
 import LoginPage from './pages/login/login.component';
 import Logout from './components/logout/logout.component';
 
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { setCurrentUser } from './redux/user/user.actions';
 
 
@@ -21,11 +19,9 @@ class App extends React.Component {
   componentDidMount(){
     const { setCurrentUser } = this.props;
     setCurrentUser( {username:'',sessionId:''} );
-    console.log( this.props );
   }
 
   componentWillUnmount(){
-   
   }
 
   render(){
@@ -35,10 +31,8 @@ class App extends React.Component {
           <div className="page-container">
             <BrowserRouter>
               <Switch>
-                <Route exact path='/home' component={HomePage} />
-                <Route path='/videos' component={VideoPage} />
                 <Route exact path='/' render={() => this.props.currentUser.sessionId !== '' ?
-                    (<Redirect to='/videos'/>) :
+                    (<VideoPage/>) :
                     (<LoginPage/> )} 
                 />
               </Switch>
